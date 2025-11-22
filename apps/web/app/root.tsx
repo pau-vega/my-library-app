@@ -1,7 +1,10 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from "react-router"
 import "@my-library-app/ui/globals.css"
+import { Toaster } from "@my-library-app/ui"
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from "react-router"
 
 import type { Route } from "./+types/root"
+
+import AuthContextProvider from "./context/auth-context"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,6 +30,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster />
+
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -35,7 +40,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />
+  return (
+    <AuthContextProvider>
+      <Outlet />
+    </AuthContextProvider>
+  )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

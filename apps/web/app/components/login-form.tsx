@@ -12,9 +12,12 @@ import {
 import { cn } from "@my-library-app/ui"
 import { Github } from "@my-library-app/ui/icons"
 
-export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+import { useAuth } from "@/context/auth-context"
+
+export function LoginForm() {
+  const { login } = useAuth()
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6")}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
@@ -24,7 +27,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           <form>
             <FieldGroup>
               <Field>
-                <Button variant="outline" type="button">
+                <Button variant="outline" type="button" onClick={login}>
                   <Github className="size-5" />
                   Continue with Github
                 </Button>
