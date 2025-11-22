@@ -1,12 +1,12 @@
 "use client"
 
 import { useIsMobile } from "@my-library-app/ui/hooks"
+import { cn } from "@my-library-app/ui/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 import * as React from "react"
 
-import { cn } from "../lib/utils"
 import { Button } from "./button"
 import { Input } from "./input"
 import { Separator } from "./separator"

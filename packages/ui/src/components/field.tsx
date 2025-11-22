@@ -1,9 +1,9 @@
 "use client"
 
+import { cn } from "@my-library-app/ui/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 import { useMemo } from "react"
 
-import { cn } from "../lib/utils"
 import { Label } from "./label"
 import { Separator } from "./separator"
 

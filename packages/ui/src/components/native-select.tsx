@@ -1,7 +1,6 @@
+import { cn } from "@my-library-app/ui/lib/utils"
 import { ChevronDownIcon } from "lucide-react"
 import * as React from "react"
-
-import { cn } from "../lib/utils"
 
 function NativeSelect({ className, ...props }: React.ComponentProps<"select">) {
   return (
