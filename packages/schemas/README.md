@@ -130,11 +130,7 @@ type IndustryIdentifier = z.infer<typeof industryIdentifierSchema>;
 ## Example: Complete Flow
 
 ```typescript
-import {
-  searchOptionsSchema,
-  volumeSearchResponseSchema,
-  type VolumeSearchResponse,
-} from "@my-library-app/schemas";
+import { searchOptionsSchema, volumeSearchResponseSchema, type VolumeSearchResponse } from "@my-library-app/schemas";
 
 async function searchBooks(query: string): Promise<VolumeSearchResponse> {
   // Validate input
