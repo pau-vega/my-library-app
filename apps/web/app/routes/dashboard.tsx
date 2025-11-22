@@ -15,7 +15,7 @@ import {
   SelectValue,
   Spinner,
 } from "@my-library-app/ui"
-import { FilterIcon, LogOutIcon, MenuIcon, SearchIcon } from "lucide-react"
+import { ArrowDownUpIcon, FilterIcon, LogOutIcon, MenuIcon, SearchIcon } from "lucide-react"
 import { useState } from "react"
 import { useSearchParams } from "react-router"
 
@@ -158,8 +158,12 @@ function DashboardContent() {
               />
             </div>
             <Select value={filterField ?? "all"} onValueChange={handleFilterChange}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Filter by" />
+              <SelectTrigger className="w-10 sm:w-[140px]">
+                <FilterIcon className="size-4 sm:hidden" />
+                <span className="hidden sm:inline">
+                  <SelectValue placeholder="Filter by" />
+                </span>
+                <span className="sr-only sm:not-sr-only sm:hidden">Filter by</span>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Fields</SelectItem>
@@ -171,8 +175,12 @@ function DashboardContent() {
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Sort by" />
+              <SelectTrigger className="w-10 sm:w-[140px]">
+                <ArrowDownUpIcon className="size-4 sm:hidden" />
+                <span className="hidden sm:inline">
+                  <SelectValue placeholder="Sort by" />
+                </span>
+                <span className="sr-only sm:not-sr-only sm:hidden">Sort by</span>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="relevance">Relevance</SelectItem>
