@@ -27,12 +27,7 @@ export default defineConfig([
     // Custom rule overrides (modify rule levels or disable rules)
     rules: {
       "perfectionist/sort-imports": ["error", { type: "natural" }],
-      "prettier/prettier": [
-        "warn",
-        {
-          endOfLine: "auto",
-        },
-      ],
+      "prettier/prettier": ["warn"],
     },
   },
 ]);
