@@ -31,7 +31,7 @@ export const volumeInfoSchema = z.object({
   publisher: z.string().optional(),
   publishedDate: z.string().optional(),
   description: z.string().optional(),
-  pageCount: z.number().int().positive().optional(),
+  pageCount: z.number().int().nonnegative().optional(),
   categories: z.array(z.string()).optional(),
   imageLinks: imageLinksSchema.optional(),
   language: z.string().optional(),
