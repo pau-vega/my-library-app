@@ -13,20 +13,37 @@ import {
   Input,
   Spinner,
 } from "@my-library-app/ui"
-import { FilterIcon, MenuIcon, SearchIcon } from "lucide-react"
+import { FilterIcon, LogOutIcon, MenuIcon, SearchIcon } from "lucide-react"
 import { useState } from "react"
 
+import { ProtectedRoute } from "@/components/protected-route"
+import { useAuth } from "@/context/auth-context"
 import { useBookSearch } from "@/hooks/use-book-search"
 
 import type { Route } from "./+types/_index"
+
+/**
+ * Removes duplicate books from an array based on book ID
+ */
+const deduplicateBooks = (books: readonly Volume[]): Volume[] => {
+  const seen = new Set<string>()
+  return books.filter((book) => {
+    if (seen.has(book.id)) {
+      return false
+    }
+    seen.add(book.id)
+    return true
+  })
+}
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Book Search" }, { name: "description", content: "Search for books in your library" }]
 }
 
-export default function Dashboard() {
+function DashboardContent() {
   const [searchQuery, setSearchQuery] = useState("")
   const [query, setQuery] = useState("")
+  const { logout, session } = useAuth()
 
   const { data, isLoading, error } = useBookSearch({
     query,
@@ -48,8 +65,15 @@ export default function Dashboard() {
             <MenuIcon className="size-5" />
             <span className="sr-only">Categories</span>
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <span className="text-sm font-medium">Categorías</span>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground text-xs">{session?.user?.email}</span>
+              <Button variant="ghost" size="icon" onClick={logout} title="Logout">
+                <LogOutIcon className="size-5" />
+                <span className="sr-only">Logout</span>
+              </Button>
+            </div>
           </div>
           <Button variant="ghost" size="icon">
             <FilterIcon className="size-5" />
@@ -118,6 +142,7 @@ export default function Dashboard() {
               {data.items.map((book) => {
                 const volumeInfo = book.volumeInfo
                 const thumbnail = volumeInfo.imageLinks?.thumbnail || volumeInfo.imageLinks?.smallThumbnail
+                const imageUrl = thumbnail ? thumbnail.replace("http://", "https://") : "/placeholder.png"
                 const authors = volumeInfo.authors?.join(", ") || "Unknown Author"
                 const title = volumeInfo.title || "Untitled"
                 const subtitle = volumeInfo.subtitle
@@ -126,15 +151,19 @@ export default function Dashboard() {
 
                 return (
                   <Card key={book.id} className="overflow-hidden">
-                    {thumbnail && (
-                      <div className="bg-muted aspect-3/4 w-full overflow-hidden">
-                        <img
-                          src={thumbnail.replace("http://", "https://")}
-                          alt={title}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    )}
+                    <div className="bg-muted aspect-3/4 w-full overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={title}
+                        className="h-full w-full object-cover"
+                        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                          const target = e.currentTarget
+                          if (target.src !== "/placeholder.png") {
+                            target.src = "/placeholder.png"
+                          }
+                        }}
+                      />
+                    </div>
                     <CardHeader className="pb-2">
                       <CardTitle className="line-clamp-2 text-base">{title}</CardTitle>
                       {subtitle && <CardDescription className="line-clamp-1 text-xs">{subtitle}</CardDescription>}
@@ -166,5 +195,13 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function Dashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
   )
 }

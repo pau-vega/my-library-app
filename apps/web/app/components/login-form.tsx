@@ -11,11 +11,19 @@ import {
 } from "@my-library-app/ui"
 import { cn } from "@my-library-app/ui"
 import { Github } from "@my-library-app/ui/icons"
+import { useSearchParams } from "react-router"
 
 import { useAuth } from "@/context/auth-context"
 
 export function LoginForm() {
   const { login } = useAuth()
+  const [searchParams] = useSearchParams()
+
+  const handleLogin = () => {
+    const redirectTo = searchParams.get("redirectTo") || "/dashboard"
+    login(redirectTo)
+  }
+
   return (
     <div className={cn("flex flex-col gap-6")}>
       <Card>
@@ -27,7 +35,7 @@ export function LoginForm() {
           <form>
             <FieldGroup>
               <Field>
-                <Button variant="outline" type="button" onClick={login}>
+                <Button variant="outline" type="button" onClick={handleLogin}>
                   <Github className="size-5" />
                   Continue with Github
                 </Button>

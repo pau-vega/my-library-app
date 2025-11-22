@@ -9,7 +9,7 @@ type AuthContextProviderProps = { children: React.ReactNode }
 type AuthContext = {
   session: Session | null
   logout: () => void
-  login: () => void
+  login: (redirectTo?: string) => void
 }
 
 export const AuthContext = createContext<AuthContext | null>(null)
@@ -33,13 +33,16 @@ export default function AuthContextProvider({ children }: AuthContextProviderPro
   const handleLogout = async () => {
     await supabase.auth.signOut()
     setSession(null)
+    // Redirect to home page after logout
+    window.location.href = "/"
   }
 
-  const handleLogin = async () => {
+  const handleLogin = async (redirectTo?: string) => {
+    const redirectUrl = redirectTo || "/dashboard"
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}${redirectUrl}`,
       },
     })
     if (error) {
