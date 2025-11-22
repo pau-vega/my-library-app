@@ -43,14 +43,15 @@ interface UseInfiniteBookSearchOptions extends Omit<SearchOptions, "startIndex">
  * ```
  */
 export const useInfiniteBookSearch = (options: UseInfiniteBookSearchOptions) => {
-  const { query, field, maxResults = 20, enabled } = options
+  const { query, field, sort, maxResults = 20, enabled } = options
 
   return useInfiniteQuery<VolumeSearchResponse, Error>({
-    queryKey: ["books", "search", "infinite", query, field, maxResults],
+    queryKey: ["books", "search", "infinite", query, field, sort, maxResults],
     queryFn: async ({ pageParam }) => {
       const result = await searchBooks({
         query,
         field,
+        sort,
         maxResults,
         startIndex: pageParam as number,
       })

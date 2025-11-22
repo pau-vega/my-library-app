@@ -51,6 +51,11 @@ const buildApiUrl = (options: SearchOptions): string => {
       "key,title,subtitle,author_name,author_key,first_publish_year,isbn,cover_i,cover_edition_key,subject,publisher,language,edition_count,number_of_pages_median",
   })
 
+  // Add sort parameter if specified (default is relevance)
+  if (options.sort && options.sort !== "relevance") {
+    params.append("sort", options.sort)
+  }
+
   if (options.maxResults !== undefined) {
     params.append("limit", options.maxResults.toString())
   }

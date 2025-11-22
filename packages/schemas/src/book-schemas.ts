@@ -6,6 +6,11 @@ import { z } from "zod";
 export const searchFieldSchema = z.enum(["title", "author", "publisher", "subject", "isbn"]);
 
 /**
+ * Sort options for Open Library API
+ */
+export const searchSortSchema = z.enum(["relevance", "new", "old", "random"]);
+
+/**
  * Industry identifier schema (ISBN, ISSN, etc.)
  */
 export const industryIdentifierSchema = z.object({
@@ -96,6 +101,7 @@ export const volumeSearchResponseSchema = z.object({
 export const searchOptionsSchema = z.object({
   query: z.string().min(1),
   field: searchFieldSchema.optional(),
+  sort: searchSortSchema.optional(),
   maxResults: z.number().int().positive().max(40).optional(),
   startIndex: z.number().int().nonnegative().optional(),
 });
@@ -104,6 +110,7 @@ export const searchOptionsSchema = z.object({
  * Type exports inferred from schemas
  */
 export type SearchField = z.infer<typeof searchFieldSchema>;
+export type SearchSort = z.infer<typeof searchSortSchema>;
 export type IndustryIdentifier = z.infer<typeof industryIdentifierSchema>;
 export type ImageLinks = z.infer<typeof imageLinksSchema>;
 export type VolumeInfo = z.infer<typeof volumeInfoSchema>;

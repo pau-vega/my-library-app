@@ -1,4 +1,4 @@
-import type { Volume } from "@my-library-app/schemas"
+import type { SearchField, SearchSort, Volume } from "@my-library-app/schemas"
 
 import {
   Button,
@@ -8,15 +8,22 @@ import {
   EmptyMedia,
   EmptyTitle,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Spinner,
 } from "@my-library-app/ui"
 import { FilterIcon, LogOutIcon, MenuIcon, SearchIcon } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
+import { useSearchParams } from "react-router"
 
 import { BookCard } from "@/components/book-card"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/context/auth-context"
 import { useInfiniteBookSearch } from "@/hooks/use-infinite-book-search"
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 
 import type { Route } from "./+types/_index"
 
@@ -25,44 +32,84 @@ export function meta({}: Route.MetaArgs) {
 }
 
 function DashboardContent() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [query, setQuery] = useState("")
+  const [searchParams, setSearchParams] = useSearchParams()
   const { logout, session } = useAuth()
-  const loadMoreRef = useRef<HTMLDivElement>(null)
+
+  // Read from URL params (source of truth)
+  const query = searchParams.get("q") ?? ""
+  const filterField = (searchParams.get("field") as SearchField | null) ?? undefined
+  const sort = (searchParams.get("sort") as SearchSort | null) ?? "relevance"
+
+  // Local state for the input field (before submission)
+  const [searchQuery, setSearchQuery] = useState(query)
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteBookSearch({
     query,
+    field: filterField,
+    sort,
     maxResults: 20,
     enabled: query.length > 0,
   })
 
   // Flatten all pages into a single array of books
+  // No need to filter by language - the API already returns English books only
   const allBooks = data?.pages.flatMap((page) => page.items ?? []) ?? []
   const totalItems = data?.pages[0]?.totalItems ?? 0
 
-  // Intersection Observer for automatic infinite scroll
-  useEffect(() => {
-    if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage()
-        }
-      },
-      { threshold: 0.1 },
-    )
-
-    observer.observe(loadMoreRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+  // Infinite scroll hook - automatically fetches next page when sentinel is visible
+  const sentinelRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  })
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    setQuery(searchQuery)
+
+    // Update URL params
+    const newParams = new URLSearchParams(searchParams)
+    if (searchQuery) {
+      newParams.set("q", searchQuery)
+    } else {
+      newParams.delete("q")
+    }
+    if (filterField) {
+      newParams.set("field", filterField)
+    } else {
+      newParams.delete("field")
+    }
+    if (sort && sort !== "relevance") {
+      newParams.set("sort", sort)
+    } else {
+      newParams.delete("sort")
+    }
+    setSearchParams(newParams, { replace: true })
+  }
+
+  const handleFilterChange = (value: string) => {
+    const field = value === "all" ? undefined : (value as SearchField)
+
+    // Update URL params immediately when filter changes
+    const newParams = new URLSearchParams(searchParams)
+    if (field) {
+      newParams.set("field", field)
+    } else {
+      newParams.delete("field")
+    }
+    setSearchParams(newParams, { replace: true })
+  }
+
+  const handleSortChange = (value: string) => {
+    const sortValue = value === "relevance" ? undefined : (value as SearchSort)
+
+    // Update URL params immediately when sort changes
+    const newParams = new URLSearchParams(searchParams)
+    if (sortValue) {
+      newParams.set("sort", sortValue)
+    } else {
+      newParams.delete("sort")
+    }
+    setSearchParams(newParams, { replace: true })
   }
 
   const handleBookClick = (book: Volume): void => {
@@ -77,10 +124,10 @@ function DashboardContent() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Button variant="ghost" size="icon">
             <MenuIcon className="size-5" />
-            <span className="sr-only">Categories</span>
+            <span className="sr-only">Menu</span>
           </Button>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">Categorías</span>
+            <span className="text-sm font-medium">My Library</span>
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-xs">{session?.user?.email}</span>
               <Button variant="ghost" size="icon" onClick={logout} title="Logout">
@@ -91,7 +138,7 @@ function DashboardContent() {
           </div>
           <Button variant="ghost" size="icon">
             <FilterIcon className="size-5" />
-            <span className="sr-only">Filter</span>
+            <span className="sr-only">Filters</span>
           </Button>
         </div>
       </header>
@@ -110,6 +157,30 @@ function DashboardContent() {
                 className="pl-10"
               />
             </div>
+            <Select value={filterField ?? "all"} onValueChange={handleFilterChange}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Filter by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Fields</SelectItem>
+                <SelectItem value="title">Title</SelectItem>
+                <SelectItem value="author">Author</SelectItem>
+                <SelectItem value="publisher">Publisher</SelectItem>
+                <SelectItem value="subject">Subject</SelectItem>
+                <SelectItem value="isbn">ISBN</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sort} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="relevance">Relevance</SelectItem>
+                <SelectItem value="new">Newest</SelectItem>
+                <SelectItem value="old">Oldest</SelectItem>
+                <SelectItem value="random">Random</SelectItem>
+              </SelectContent>
+            </Select>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? <Spinner className="size-4" /> : "Search"}
             </Button>
@@ -160,7 +231,7 @@ function DashboardContent() {
             </div>
             {/* Intersection observer target for infinite scroll */}
             {hasNextPage && (
-              <div ref={loadMoreRef} className="flex items-center justify-center py-8">
+              <div ref={sentinelRef} className="flex items-center justify-center py-8">
                 {isFetchingNextPage && <Spinner className="size-6" />}
               </div>
             )}
