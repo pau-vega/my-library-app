@@ -15,6 +15,7 @@
     "utils": "@my-library-app/ui",
     "hooks": "@my-library-app/ui/hooks",
     "lib": "@my-library-app/ui/lib",
-    "ui": "@my-library-app/ui/components"
+    "ui": "@my-library-app/ui/components",
+    "icons": "@my-library-app/ui/icons"
   }
 }

@@ -24,6 +24,10 @@
       "types": "./dist/hooks/index.d.ts",
       "import": "./dist/hooks/index.js"
     },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "import": "./dist/icons/index.js"
+    },
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": {
@@ -37,6 +41,10 @@
     "./hooks/*": {
       "types": "./dist/hooks/*.d.ts",
       "import": "./dist/hooks/*.js"
+    },
+    "./icons/*": {
+      "types": "./dist/icons/*.d.ts",
+      "import": "./dist/icons/*.js"
     }
   },
   "files": [
