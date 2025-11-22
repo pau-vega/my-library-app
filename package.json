@@ -5,7 +5,8 @@
     "@eslint-react/eslint-plugin": "^2.3.1",
     "@eslint/js": "^9.39.1",
     "@tsconfig/node22": "^22.0.2",
-    "@types/node": "^22.19.0",
+    "@tsconfig/node24": "^24.0.3",
+    "@types/node": "^22.19.1",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-perfectionist": "^4.15.1",
@@ -13,10 +14,11 @@
     "globals": "^16.5.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
+    "tsup": "^8.5.1",
     "turbo": "^2.5.8",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.46.3"
   },
   "type": "module",
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b"
 }

@@ -17,8 +17,11 @@ importers:
       '@tsconfig/node22':
         specifier: ^22.0.2
         version: 22.0.5
+      '@tsconfig/node24':
+        specifier: ^24.0.3
+        version: 24.0.3
       '@types/node':
-        specifier: ^22.19.0
+        specifier: ^22.19.1
         version: 22.19.1
       eslint:
         specifier: ^9.39.1
@@ -41,6 +44,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.7.1
         version: 0.7.1(prettier@3.6.2)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.3)
       turbo:
         specifier: ^2.5.8
         version: 2.6.1
@@ -53,6 +59,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@my-library-app/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@my-library-app/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -114,6 +123,12 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2))
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
 
   packages/ui:
     dependencies:
@@ -1909,6 +1924,9 @@ packages:
 
   '@tsconfig/node22@22.0.5':
     resolution: {integrity: sha512-hLf2ld+sYN/BtOJjHUWOk568dvjFQkHnLNa6zce25GIH+vxKfvTgm3qpaH6ToF5tu/NN0IH66s+Bb5wElHrLcw==}
+
+  '@tsconfig/node24@24.0.3':
+    resolution: {integrity: sha512-vcERKtKQKHgzt/vfS3Gjasd8SUI2a0WZXpgJURdJsMySpS5+ctgbPfuLj2z/W+w4lAfTWxoN4upKfu2WzIRYnw==}
 
   '@types/d3-array@3.2.2':
     resolution: {integrity: sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==}
@@ -5604,6 +5622,8 @@ snapshots:
       - utf-8-validate
 
   '@tsconfig/node22@22.0.5': {}
+
+  '@tsconfig/node24@24.0.3': {}
 
   '@types/d3-array@3.2.2': {}
 

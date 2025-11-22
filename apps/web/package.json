@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@my-library-app/schemas": "workspace:*",
     "@my-library-app/ui": "workspace:*",
     "@react-router/fs-routes": "^7.9.6",
     "@react-router/node": "^7.9.2",
