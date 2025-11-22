@@ -26,7 +26,7 @@ export default function Home() {
       <div className="flex max-w-2xl flex-col items-center gap-6 text-center">
         <h1 className="text-4xl font-bold tracking-tight">Welcome to My Library App</h1>
         <p className="text-muted-foreground text-lg">
-          Discover and search for books from the Google Books API. Create your personal library and explore millions of
+          Discover and search for books from Open Library. Create your personal library and explore millions of
           titles.
         </p>
 

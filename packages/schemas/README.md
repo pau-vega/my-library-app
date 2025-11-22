@@ -1,10 +1,10 @@
 # @my-library-app/schemas
 
-Zod validation schemas for the library app, providing type-safe validation for the Google Books API.
+Zod validation schemas for the library app, providing type-safe validation for the Open Library API.
 
 ## Features
 
-- **Book Schemas**: Comprehensive schemas for Google Books API responses
+- **Book Schemas**: Comprehensive schemas for Open Library API responses
 - **Search Validation**: Schemas for validating search queries and options
 - **Type Safety**: TypeScript types inferred from Zod schemas
 - **Runtime Validation**: Validate API responses at runtime to catch data inconsistencies
@@ -63,7 +63,7 @@ import { searchOptionsSchema } from "@my-library-app/schemas";
 
 const options = {
   query: "TypeScript",
-  field: "intitle",
+  field: "title",
   maxResults: 10,
 };
 
@@ -79,14 +79,16 @@ if (result.success) {
 
 ### Search Schemas
 
-- `searchFieldSchema` - Enum for search field keywords (intitle, inauthor, etc.)
+- `searchFieldSchema` - Enum for search field keywords (title, author, publisher, subject, isbn)
 - `searchOptionsSchema` - Schema for search query options
 
 ### Book Data Schemas
 
 - `volumeInfoSchema` - Detailed information about a book
 - `volumeSchema` - Complete volume/book object
-- `volumeSearchResponseSchema` - Google Books API search response
+- `volumeSearchResponseSchema` - Open Library API search response (transformed format)
+- `openLibrarySearchResponseSchema` - Raw Open Library API search response
+- `openLibraryDocSchema` - Open Library document schema
 - `imageLinksSchema` - Book cover image URLs
 - `industryIdentifierSchema` - ISBN, ISSN, etc.
 
@@ -140,7 +142,7 @@ async function searchBooks(query: string): Promise<VolumeSearchResponse> {
   });
 
   // Make API request
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${options.query}`;
+  const url = `https://openlibrary.org/search.json?q=${options.query}`;
   const response = await fetch(url);
   const rawData = await response.json();
 

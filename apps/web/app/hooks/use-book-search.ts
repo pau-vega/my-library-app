@@ -9,7 +9,7 @@ interface UseBookSearchOptions extends SearchOptions {
 }
 
 /**
- * Hook for searching books with the Google Books API using React Query
+ * Hook for searching books with the Open Library API using React Query
  *
  * Provides automatic caching, deduplication, and state management for book searches.
  *

@@ -1,22 +1,27 @@
-import type { SearchOptions, VolumeSearchResponse } from "@my-library-app/schemas"
+import type {
+  OpenLibraryDoc,
+  OpenLibrarySearchResponse,
+  SearchOptions,
+  Volume,
+  VolumeInfo,
+  VolumeSearchResponse,
+} from "@my-library-app/schemas"
 
-import { volumeSearchResponseSchema } from "@my-library-app/schemas"
+import { openLibrarySearchResponseSchema } from "@my-library-app/schemas"
 
 type Result<TData, TError extends Error> =
   | { readonly ok: true; readonly value: TData }
   | { readonly ok: false; readonly error: TError }
 
 /**
- * Special search field keywords for Google Books API
+ * Special search field keywords for Open Library API
  */
 export const SEARCH_FIELDS = {
-  TITLE: "intitle",
-  AUTHOR: "inauthor",
-  PUBLISHER: "inpublisher",
+  TITLE: "title",
+  AUTHOR: "author",
+  PUBLISHER: "publisher",
   SUBJECT: "subject",
   ISBN: "isbn",
-  LCCN: "lccn",
-  OCLC: "oclc",
 } as const
 
 /**
@@ -26,6 +31,7 @@ const buildSearchQuery = (options: SearchOptions): string => {
   const { query, field } = options
 
   if (field) {
+    // Open Library uses field:value format
     return `${field}:${query}`
   }
 
@@ -33,33 +39,98 @@ const buildSearchQuery = (options: SearchOptions): string => {
 }
 
 /**
- * Builds the complete URL for the Google Books API request
+ * Builds the complete URL for the Open Library API request
  */
 const buildApiUrl = (options: SearchOptions): string => {
-  const baseUrl = "https://www.googleapis.com/books/v1/volumes"
+  const baseUrl = "https://openlibrary.org/search.json"
   const searchQuery = buildSearchQuery(options)
   const params = new URLSearchParams({
     q: searchQuery,
+    // Request specific fields to optimize response size and speed
+    fields:
+      "key,title,subtitle,author_name,author_key,first_publish_year,isbn,cover_i,cover_edition_key,subject,publisher,language,edition_count,number_of_pages_median",
   })
 
   if (options.maxResults !== undefined) {
-    params.append("maxResults", options.maxResults.toString())
+    params.append("limit", options.maxResults.toString())
   }
 
   if (options.startIndex !== undefined) {
-    params.append("startIndex", options.startIndex.toString())
+    params.append("offset", options.startIndex.toString())
   }
 
   return `${baseUrl}?${params.toString()}`
 }
 
 /**
- * Searches for books using the Google Books API
+ * Gets Open Library cover image URL
+ */
+const getCoverImageUrl = (coverId?: number, size: "S" | "M" | "L" = "M"): string | undefined => {
+  if (!coverId) return undefined
+  return `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`
+}
+
+/**
+ * Transforms Open Library document to Volume format
+ */
+const transformOpenLibraryDocToVolume = (doc: OpenLibraryDoc): Volume => {
+  const thumbnail = getCoverImageUrl(doc.cover_i, "M")
+  const smallThumbnail = getCoverImageUrl(doc.cover_i, "S")
+
+  const volumeInfo: VolumeInfo = {
+    title: doc.title || "Untitled",
+    subtitle: doc.subtitle,
+    authors: doc.author_name,
+    publishedDate: doc.first_publish_year?.toString(),
+    categories: doc.subject?.slice(0, 5), // Limit subjects to first 5
+    publisher: doc.publisher?.[0],
+    language: doc.language?.[0],
+    pageCount: doc.number_of_pages_median,
+    imageLinks:
+      thumbnail || smallThumbnail
+        ? {
+            thumbnail,
+            smallThumbnail,
+          }
+        : undefined,
+    industryIdentifiers: doc.isbn?.slice(0, 5).map((isbn) => ({
+      type: isbn.length === 13 ? "ISBN_13" : "ISBN_10",
+      identifier: isbn,
+    })),
+  }
+
+  // Extract Open Library ID from key (e.g., "/works/OL123456W" -> "OL123456W")
+  const id = doc.key.split("/").pop() || doc.key
+
+  return {
+    id,
+    volumeInfo,
+    selfLink: `https://openlibrary.org${doc.key}`,
+  }
+}
+
+/**
+ * Transforms Open Library search response to VolumeSearchResponse format
+ */
+const transformOpenLibraryResponse = (response: OpenLibrarySearchResponse): VolumeSearchResponse => {
+  return {
+    kind: "openlibrary#volumes",
+    totalItems: response.numFound,
+    items: response.docs.map(transformOpenLibraryDocToVolume),
+  }
+}
+
+/**
+ * Searches for books using the Open Library API
  */
 export const searchBooks = async (options: SearchOptions): Promise<Result<VolumeSearchResponse, Error>> => {
   try {
     const url = buildApiUrl(options)
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "My Library App (contact: your-email@example.com)",
+      },
+    })
 
     if (!response.ok) {
       return {
@@ -70,8 +141,8 @@ export const searchBooks = async (options: SearchOptions): Promise<Result<Volume
 
     const rawData = await response.json()
 
-    // Validate the response data with Zod schema
-    const parseResult = volumeSearchResponseSchema.safeParse(rawData)
+    // Validate the Open Library response data with Zod schema
+    const parseResult = openLibrarySearchResponseSchema.safeParse(rawData)
 
     if (!parseResult.success) {
       return {
@@ -80,9 +151,12 @@ export const searchBooks = async (options: SearchOptions): Promise<Result<Volume
       }
     }
 
+    // Transform Open Library response to VolumeSearchResponse format
+    const transformedResponse = transformOpenLibraryResponse(parseResult.data)
+
     return {
       ok: true,
-      value: parseResult.data,
+      value: transformedResponse,
     }
   } catch (error) {
     return {
@@ -158,34 +232,6 @@ export const searchByIsbn = async (
   return searchBooks({
     query: isbn,
     field: SEARCH_FIELDS.ISBN,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by Library of Congress Control Number
- */
-export const searchByLccn = async (
-  lccn: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: lccn,
-    field: SEARCH_FIELDS.LCCN,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by Online Computer Library Center number
- */
-export const searchByOclc = async (
-  oclc: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: oclc,
-    field: SEARCH_FIELDS.OCLC,
     ...options,
   })
 }

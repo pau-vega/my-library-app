@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 /**
- * Search field keywords for Google Books API
+ * Search field keywords for Open Library API
  */
-export const searchFieldSchema = z.enum(["intitle", "inauthor", "inpublisher", "subject", "isbn", "lccn", "oclc"]);
+export const searchFieldSchema = z.enum(["title", "author", "publisher", "subject", "isbn"]);
 
 /**
  * Industry identifier schema (ISBN, ISSN, etc.)
@@ -50,7 +50,39 @@ export const volumeSchema = z.object({
 });
 
 /**
- * Volume search response schema from Google Books API
+ * Open Library search document schema
+ */
+export const openLibraryDocSchema = z.object({
+  key: z.string(),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  author_name: z.array(z.string()).optional(),
+  author_key: z.array(z.string()).optional(),
+  first_publish_year: z.number().int().optional(),
+  isbn: z.array(z.string()).optional(),
+  cover_i: z.number().int().optional(),
+  cover_edition_key: z.string().optional(),
+  subject: z.array(z.string()).optional(),
+  publisher: z.array(z.string()).optional(),
+  publish_year: z.array(z.number().int()).optional(),
+  language: z.array(z.string()).optional(),
+  edition_count: z.number().int().nonnegative().optional(),
+  number_of_pages_median: z.number().int().nonnegative().optional(),
+  has_fulltext: z.boolean().optional(),
+  public_scan_b: z.boolean().optional(),
+});
+
+/**
+ * Open Library search response schema
+ */
+export const openLibrarySearchResponseSchema = z.object({
+  numFound: z.number().int().nonnegative(),
+  start: z.number().int().nonnegative(),
+  docs: z.array(openLibraryDocSchema),
+});
+
+/**
+ * Volume search response schema (transformed from Open Library API)
  */
 export const volumeSearchResponseSchema = z.object({
   kind: z.string(),
@@ -78,3 +110,5 @@ export type VolumeInfo = z.infer<typeof volumeInfoSchema>;
 export type Volume = z.infer<typeof volumeSchema>;
 export type VolumeSearchResponse = z.infer<typeof volumeSearchResponseSchema>;
 export type SearchOptions = z.infer<typeof searchOptionsSchema>;
+export type OpenLibraryDoc = z.infer<typeof openLibraryDocSchema>;
+export type OpenLibrarySearchResponse = z.infer<typeof openLibrarySearchResponseSchema>;
