@@ -1,0 +1,29 @@
+# Build output folders
+**/dist/
+**/build/
+**/.next/
+**/.vocs/
+
+# Dependencies
+**/node_modules/
+
+# Version control
+**/.git/
+
+# Coverage reports
+**/coverage/
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
