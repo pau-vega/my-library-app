@@ -15,12 +15,12 @@ import {
   SelectValue,
   Spinner,
 } from "@my-library-app/ui"
-import { ArrowDownUpIcon, FilterIcon, LogOutIcon, MenuIcon, SearchIcon } from "lucide-react"
+import { ArrowDownUpIcon, FilterIcon, SearchIcon } from "lucide-react"
 import { useState } from "react"
 import { redirect, useSearchParams } from "react-router"
 
 import { BookCard } from "@/components/book-card"
-import { useAuth } from "@/hooks/use-auth"
+import { Navigation } from "@/components/layout/navigation"
 import { useInfiniteBookSearch } from "@/hooks/use-infinite-book-search"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import { getUser } from "@/services/auth-service"
@@ -37,9 +37,8 @@ export async function clientLoader() {
   return { user: result.value }
 }
 
-export default function Dashboard({ loaderData: { user } }: Route.ComponentProps) {
+export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { logout } = useAuth()
 
   // Read from URL params (source of truth)
   const query = searchParams.get("q") ?? ""
@@ -126,28 +125,7 @@ export default function Dashboard({ loaderData: { user } }: Route.ComponentProps
   return (
     <div className="bg-background min-h-screen">
       {/* Header */}
-      <header className="bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-10 border-b backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Button variant="ghost" size="icon">
-            <MenuIcon className="size-5" />
-            <span className="sr-only">Menu</span>
-          </Button>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">My Library</span>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-xs">{user?.email}</span>
-              <Button variant="ghost" size="icon" onClick={() => logout()} title="Logout">
-                <LogOutIcon className="size-5" />
-                <span className="sr-only">Logout</span>
-              </Button>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon">
-            <FilterIcon className="size-5" />
-            <span className="sr-only">Filters</span>
-          </Button>
-        </div>
-      </header>
+      <Navigation />
 
       <div className="container mx-auto px-4 py-6">
         {/* Search Section */}
