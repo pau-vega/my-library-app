@@ -84,9 +84,8 @@ const transformOpenLibraryDocToVolume = (doc: OpenLibraryDoc): Volume => {
 
   const volumeInfo: VolumeInfo = {
     title: doc.title || "Untitled",
-    subtitle: doc.subtitle,
     authors: doc.author_name,
-    publishedDate: doc.first_publish_year?.toString(),
+    publishedDate: doc.first_publish_year?.toString() || "Unknown",
     categories: doc.subject?.slice(0, 5), // Limit subjects to first 5
     publisher: doc.publisher?.[0],
     language: doc.language?.[0],

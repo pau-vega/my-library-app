@@ -31,10 +31,9 @@ export const imageLinksSchema = z.object({
  */
 export const volumeInfoSchema = z.object({
   title: z.string(),
-  subtitle: z.string().optional(),
   authors: z.array(z.string()).optional(),
   publisher: z.string().optional(),
-  publishedDate: z.string().optional(),
+  publishedDate: z.string(),
   description: z.string().optional(),
   pageCount: z.number().int().nonnegative().optional(),
   categories: z.array(z.string()).optional(),

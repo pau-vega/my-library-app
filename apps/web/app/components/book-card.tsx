@@ -1,6 +1,6 @@
 import type { Volume } from "@my-library-app/schemas"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@my-library-app/ui"
+import { Card, CardContent, CardHeader, CardTitle } from "@my-library-app/ui"
 
 type BookCardProps = {
   readonly book: Volume
@@ -11,12 +11,12 @@ type BookCardProps = {
  * Book card component displaying book information in a compact card format
  */
 export const BookCard = ({ book, onClick }: BookCardProps) => {
+  console.log(book)
   const volumeInfo = book.volumeInfo
   const thumbnail = volumeInfo.imageLinks?.thumbnail || volumeInfo.imageLinks?.smallThumbnail
   const imageUrl = thumbnail ? thumbnail.replace("http://", "https://") : "/placeholder.png"
   const authors = volumeInfo.authors?.join(", ") || "Unknown Author"
   const title = volumeInfo.title || "Untitled"
-  const subtitle = volumeInfo.subtitle
   const publishedDate = volumeInfo.publishedDate
   const categories = volumeInfo.categories?.slice(0, 2).join(", ")
 
@@ -28,7 +28,7 @@ export const BookCard = ({ book, onClick }: BookCardProps) => {
 
   return (
     <Card
-      className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
+      className="cursor-pointer gap-1 overflow-hidden rounded-none border-0 p-0 shadow-none"
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -39,7 +39,7 @@ export const BookCard = ({ book, onClick }: BookCardProps) => {
         }
       }}
     >
-      <div className="bg-muted aspect-3/4 w-full overflow-hidden">
+      <div className="bg-muted aspect-3/5 w-full overflow-hidden">
         <img
           src={imageUrl}
           alt={title}
@@ -52,15 +52,16 @@ export const BookCard = ({ book, onClick }: BookCardProps) => {
           }}
         />
       </div>
-      <CardHeader className="pt-2 pb-1.5">
-        <CardTitle className="line-clamp-2 text-sm leading-tight">{title}</CardTitle>
-        {subtitle && <CardDescription className="line-clamp-1 text-[10px]">{subtitle}</CardDescription>}
+      <CardHeader className="px-2 py-2">
+        <CardTitle className="line-clamp-3 text-center text-xs leading-tight font-normal uppercase">
+          {title}
+          <span className="mx-1">({publishedDate})</span>
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-0.5 pt-0 pb-2">
         <div className="text-muted-foreground text-xs">
-          <div className="line-clamp-1">{authors}</div>
+          <div className="line-clamp-1 font-semibold">{authors}</div>
           {categories && <div className="line-clamp-1 text-[10px]">{categories}</div>}
-          {publishedDate && <div className="text-[10px]">{publishedDate.split("-")[0]}</div>}
         </div>
       </CardContent>
     </Card>
