@@ -66,4 +66,3 @@ export const useInfiniteBookSearch = (options: UseInfiniteBookSearchOptions) => 
     initialPageParam: 0,
   })
 }
-

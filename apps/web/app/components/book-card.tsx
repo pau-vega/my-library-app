@@ -1,12 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@my-library-app/ui"
-
 import type { Volume } from "@my-library-app/schemas"
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@my-library-app/ui"
 
 type BookCardProps = {
   readonly book: Volume
@@ -34,7 +28,7 @@ export const BookCard = ({ book, onClick }: BookCardProps) => {
 
   return (
     <Card
-      className="overflow-hidden transition-shadow hover:shadow-md cursor-pointer"
+      className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -72,4 +66,3 @@ export const BookCard = ({ book, onClick }: BookCardProps) => {
     </Card>
   )
 }
-

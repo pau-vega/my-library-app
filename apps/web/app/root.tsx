@@ -6,8 +6,6 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse }
 
 import type { Route } from "./+types/root"
 
-import AuthContextProvider from "./context/auth-context"
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,9 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <Outlet />
-      </AuthContextProvider>
+      <Outlet />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

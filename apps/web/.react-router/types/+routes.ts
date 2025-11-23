@@ -17,33 +17,30 @@ type Pages = {
   "/login": {
     params: {};
   };
-  "/dashboard": {
-    params: {};
-  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/dashboard";
-  };
-  "routes/_auth.login.tsx": {
-    id: "routes/_auth.login";
-    page: "/login";
-  };
-  "routes/dashboard.tsx": {
-    id: "routes/dashboard";
-    page: "/dashboard";
+    page: "/" | "/login";
   };
   "routes/_index.tsx": {
     id: "routes/_index";
     page: "/";
   };
+  "routes/_auth.tsx": {
+    id: "routes/_auth";
+    page: "/login";
+  };
+  "routes/_auth.login.tsx": {
+    id: "routes/_auth.login";
+    page: "/login";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
-  "routes/_auth.login": typeof import("./app/routes/_auth.login.tsx");
-  "routes/dashboard": typeof import("./app/routes/dashboard.tsx");
   "routes/_index": typeof import("./app/routes/_index.tsx");
+  "routes/_auth": typeof import("./app/routes/_auth.tsx");
+  "routes/_auth.login": typeof import("./app/routes/_auth.login.tsx");
 };
