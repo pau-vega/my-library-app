@@ -13,3 +13,4 @@ export const authQueryKeys = {
   users: () => [...authQueryKeys.all, "user"] as const,
   user: () => [...authQueryKeys.users()] as const,
 }
+

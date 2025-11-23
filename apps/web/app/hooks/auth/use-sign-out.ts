@@ -49,3 +49,4 @@ export const useSignOut = (): UseSignOutReturn => {
     error: error ?? null,
   }
 }
+

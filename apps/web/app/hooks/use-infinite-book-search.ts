@@ -1,8 +1,6 @@
-import type { SearchOptions, VolumeSearchResponse } from "@my-library-app/schemas"
-
 import { useInfiniteQuery } from "@tanstack/react-query"
 
-import { searchBooks } from "../services/book-service"
+import { searchBooks, type SearchOptions, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseInfiniteBookSearchOptions extends Omit<SearchOptions, "startIndex"> {
   readonly enabled?: boolean

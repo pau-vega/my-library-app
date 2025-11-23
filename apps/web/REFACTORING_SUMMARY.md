@@ -164,3 +164,4 @@ See `AUTH_HOOKS_MIGRATION.md` for detailed migration examples and troubleshootin
 ---
 **Note:** The old `useAuth()` API is still available and works exactly the same way. You can migrate to the new hooks gradually or keep using `useAuth()` if preferred.
 
+

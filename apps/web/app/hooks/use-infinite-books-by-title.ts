@@ -1,8 +1,6 @@
-import type { VolumeSearchResponse } from "@my-library-app/schemas"
-
 import { useInfiniteQuery } from "@tanstack/react-query"
 
-import { searchByTitle } from "../services/book-service"
+import { searchByTitle, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseInfiniteBooksByTitleOptions {
   readonly title: string

@@ -1,6 +1,6 @@
-import type { Volume } from "@my-library-app/schemas"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@my-library-app/ui"
+
+import type { Volume } from "@/services/book-service"
 
 type BookCardProps = {
   readonly book: Volume

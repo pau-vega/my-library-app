@@ -1,8 +1,6 @@
-import type { VolumeSearchResponse } from "@my-library-app/schemas"
-
 import { useQuery } from "@tanstack/react-query"
 
-import { searchByAuthor } from "../services/book-service"
+import { searchByAuthor, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseBookSearchByAuthorOptions {
   readonly author: string

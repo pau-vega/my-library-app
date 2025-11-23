@@ -31,3 +31,4 @@ export const useAuthStateSync = (): void => {
     return unsubscribe
   }, [queryClient])
 }
+

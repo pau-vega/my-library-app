@@ -311,3 +311,4 @@ The refactored auth hooks follow TanStack Query best practices:
 - **Maintainability** - Centralized query keys and clear structure
 
 The `useAuth` convenience hook maintains backward compatibility, so you can migrate incrementally.
+

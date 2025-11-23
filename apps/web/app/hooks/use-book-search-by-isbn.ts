@@ -1,8 +1,6 @@
-import type { VolumeSearchResponse } from "@my-library-app/schemas"
-
 import { useQuery } from "@tanstack/react-query"
 
-import { searchByIsbn } from "../services/book-service"
+import { searchByIsbn, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseBookSearchByIsbnOptions {
   readonly isbn: string

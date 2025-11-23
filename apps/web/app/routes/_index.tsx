@@ -1,5 +1,4 @@
-import type { SearchField, SearchSort, Volume } from "@my-library-app/schemas"
-
+import { searchBookSortOptionsSchema, type SearchSort } from "@my-library-app/schemas"
 import {
   Button,
   Empty,
@@ -10,7 +9,9 @@ import {
   Input,
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
   Spinner,
@@ -24,6 +25,7 @@ import { Navigation } from "@/components/layout/navigation"
 import { useInfiniteBookSearch } from "@/hooks/use-infinite-book-search"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import { getUser } from "@/services/auth-service"
+import { type SearchField, type Volume } from "@/services/book-service"
 
 import type { Route } from "./+types/_index"
 
@@ -43,7 +45,7 @@ export default function Dashboard() {
   // Read from URL params (source of truth)
   const query = searchParams.get("q") ?? ""
   const filterField = (searchParams.get("field") as SearchField | null) ?? undefined
-  const sort = (searchParams.get("sort") as SearchSort | null) ?? "relevance"
+  const sort = (searchParams.get("sort") as SearchSort | null) ?? undefined
 
   // Local state for the input field (before submission)
   const [searchQuery, setSearchQuery] = useState(query)
@@ -83,7 +85,7 @@ export default function Dashboard() {
     } else {
       newParams.delete("field")
     }
-    if (sort && sort !== "relevance") {
+    if (sort) {
       newParams.set("sort", sort)
     } else {
       newParams.delete("sort")
@@ -105,7 +107,7 @@ export default function Dashboard() {
   }
 
   const handleSortChange = (value: string) => {
-    const sortValue = value === "relevance" ? undefined : (value as SearchSort)
+    const sortValue = value === "none" ? undefined : (value as SearchSort)
 
     // Update URL params immediately when sort changes
     const newParams = new URLSearchParams(searchParams)
@@ -158,7 +160,7 @@ export default function Dashboard() {
                 <SelectItem value="isbn">ISBN</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={sort} onValueChange={handleSortChange}>
+            <Select value={sort ?? "none"} onValueChange={handleSortChange}>
               <SelectTrigger className="w-10 sm:w-[140px]">
                 <ArrowDownUpIcon className="size-4 sm:hidden" />
                 <span className="hidden sm:inline">
@@ -167,10 +169,15 @@ export default function Dashboard() {
                 <span className="sr-only sm:not-sr-only sm:hidden">Sort by</span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">Relevance</SelectItem>
-                <SelectItem value="new">Newest</SelectItem>
-                <SelectItem value="old">Oldest</SelectItem>
-                <SelectItem value="random">Random</SelectItem>
+                <SelectGroup>
+                  <SelectLabel>Sort by</SelectLabel>
+                  <SelectItem value="none">Relevance</SelectItem>
+                  {searchBookSortOptionsSchema.options.map((option) => (
+                    <SelectItem key={option} value={option} className="capitalize">
+                      {option.replace(/_/g, " ").charAt(0).toUpperCase() + option.replace(/_/g, " ").slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
             <Button type="submit" disabled={isLoading}>

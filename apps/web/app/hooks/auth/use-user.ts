@@ -49,3 +49,4 @@ export const useUser = (): UseUserReturn => {
     error: error ?? null,
   }
 }
+

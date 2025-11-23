@@ -56,3 +56,4 @@ export const useInfiniteScroll = (options: UseInfiniteScrollOptions) => {
 
   return sentinelRef
 }
+

@@ -61,3 +61,4 @@ export const useAuth = (): UseAuthReturn => {
     logout: signOut,
   }
 }
+
