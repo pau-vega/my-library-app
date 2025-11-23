@@ -36,12 +36,10 @@ export default function ProfileDropdown() {
       {user && (
         <DropdownMenuContent align="end" className="bg-background w-64">
           <DropdownMenuLabel className="text-sm font-bold">{user.user_metadata.name}</DropdownMenuLabel>
-
           <DropdownMenuSeparator />
-
           <DropdownMenuItem
             onClick={() => logout()}
-            className="text-destructive focus:text-destructive hover:bg-error/10 focus:bg-error/10 cursor-pointer"
+            className="text-destructive focus:text-destructive hover:bg-error/20 focus:bg-error/20 bg-error/10 cursor-pointer"
           >
             <LogOut className="size-4" />
             Sign out
