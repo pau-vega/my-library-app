@@ -34,7 +34,7 @@ export default function ProfileDropdown() {
         </Button>
       </DropdownMenuTrigger>
       {user && (
-        <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuContent align="end" className="bg-background w-64">
           <DropdownMenuLabel className="text-sm font-bold">{user.user_metadata.name}</DropdownMenuLabel>
 
           <DropdownMenuSeparator />
