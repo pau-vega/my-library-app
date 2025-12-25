@@ -51,6 +51,3 @@ export const useSession = (): UseSessionReturn => {
     isAuthenticated: !!session,
   }
 }
-
-
-
