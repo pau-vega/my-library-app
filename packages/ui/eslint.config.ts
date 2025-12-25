@@ -40,6 +40,7 @@ export default defineConfig([
       "perfectionist/sort-imports": ["error", { type: "natural" }],
       "prettier/prettier": "warn",
       "no-empty-pattern": "off",
+      "@eslint-react/no-nested-component-definitions": "warn",
     },
   },
 ])

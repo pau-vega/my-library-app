@@ -20,7 +20,7 @@ export default defineConfig({
     "react-hook-form",
     "zod",
     "next-themes",
-    "@radix-ui/*",
+    "@base-ui/react",
     "lucide-react",
     "recharts",
     "sonner",
