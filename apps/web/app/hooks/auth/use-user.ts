@@ -2,7 +2,7 @@ import type { User } from "@supabase/supabase-js"
 
 import { useQuery } from "@tanstack/react-query"
 
-import { getUser } from "../../services/auth-service"
+import { authService } from "../../services/auth-service"
 import { authQueryKeys } from "./auth-query-keys"
 
 interface UseUserReturn {
@@ -34,7 +34,7 @@ export const useUser = (): UseUserReturn => {
   } = useQuery<User | null, Error>({
     queryKey: authQueryKeys.user(),
     queryFn: async () => {
-      const result = await getUser()
+      const result = await authService.getUser()
       if (!result.ok) throw result.error
       return result.value
     },

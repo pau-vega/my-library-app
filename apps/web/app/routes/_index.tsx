@@ -24,7 +24,7 @@ import { BookCard } from "@/components/book-card"
 import { Navigation } from "@/components/layout/navigation"
 import { useInfiniteBookSearch } from "@/hooks/use-infinite-book-search"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
-import { getUser } from "@/services/auth-service"
+import { authService } from "@/services/auth-service"
 import { type SearchField, type Volume } from "@/services/book-service"
 
 import type { Route } from "./+types/_index"
@@ -34,7 +34,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function clientLoader() {
-  const result = await getUser()
+  const result = await authService.getUser()
   if (!result.ok) return redirect("/login")
   return { user: result.value }
 }

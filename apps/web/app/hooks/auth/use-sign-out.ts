@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { signOut } from "../../services/auth-service"
+import { authService } from "../../services/auth-service"
 import { authQueryKeys } from "./auth-query-keys"
 
 interface UseSignOutReturn {
@@ -31,7 +31,7 @@ export const useSignOut = (): UseSignOutReturn => {
   const queryClient = useQueryClient()
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: signOut,
+    mutationFn: authService.signOut,
     onSuccess: () => {
       queryClient.setQueryData(authQueryKeys.session(), null)
       queryClient.setQueryData(authQueryKeys.user(), null)

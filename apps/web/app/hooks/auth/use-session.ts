@@ -2,7 +2,7 @@ import type { Session } from "@supabase/supabase-js"
 
 import { useQuery } from "@tanstack/react-query"
 
-import { getSession } from "../../services/auth-service"
+import { authService } from "../../services/auth-service"
 import { authQueryKeys } from "./auth-query-keys"
 
 interface UseSessionReturn {
@@ -35,7 +35,7 @@ export const useSession = (): UseSessionReturn => {
   } = useQuery<Session | null, Error>({
     queryKey: authQueryKeys.session(),
     queryFn: async () => {
-      const result = await getSession()
+      const result = await authService.getSession()
       if (!result.ok) throw result.error
       return result.value
     },

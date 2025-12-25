@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 
-import { searchBooks, type SearchOptions, type VolumeSearchResponse } from "../services/book-service"
+import { bookService, type SearchOptions, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseInfiniteBookSearchOptions extends Omit<SearchOptions, "startIndex"> {
   readonly enabled?: boolean
@@ -46,7 +46,7 @@ export const useInfiniteBookSearch = (options: UseInfiniteBookSearchOptions) => 
   return useInfiniteQuery<VolumeSearchResponse, Error>({
     queryKey: ["books", "search", "infinite", query, field, sort, maxResults],
     queryFn: async ({ pageParam }) => {
-      const result = await searchBooks({
+      const result = await bookService.searchBooks({
         query,
         field,
         sort,

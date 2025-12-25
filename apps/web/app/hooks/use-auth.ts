@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { toast } from "sonner"
 
-import { getSession, getUser, onAuthStateChange, signInWithOAuth, signOut } from "../services/auth-service"
+import { authService } from "../services/auth-service"
 
 /**
  * Hook for authentication operations
@@ -37,7 +37,7 @@ export const useAuth = () => {
 
   // Subscribe to auth state changes to keep cache in sync
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((_event, session) => {
+    const unsubscribe = authService.onAuthStateChange((_event, session) => {
       // Update cache when auth state changes (e.g., login/logout in another tab, token expiration)
       queryClient.setQueryData(AUTH_SESSION_KEY, session)
       queryClient.setQueryData(AUTH_USER_KEY, session?.user ?? null)
@@ -50,7 +50,7 @@ export const useAuth = () => {
   const { data: session, isLoading: isSessionLoading } = useQuery<Session | null, Error>({
     queryKey: AUTH_SESSION_KEY,
     queryFn: async () => {
-      const result = await getSession()
+      const result = await authService.getSession()
       if (!result.ok) throw result.error
       return result.value
     },
@@ -62,7 +62,7 @@ export const useAuth = () => {
   const { data: user, isLoading: isUserLoading } = useQuery<User | null, Error>({
     queryKey: AUTH_USER_KEY,
     queryFn: async () => {
-      const result = await getUser()
+      const result = await authService.getUser()
       if (!result.ok) throw result.error
       return result.value
     },
@@ -72,7 +72,7 @@ export const useAuth = () => {
 
   // Sign in mutation
   const { mutate: signInMutation, isPending: isSigningIn } = useMutation({
-    mutationFn: signInWithOAuth,
+    mutationFn: authService.signInWithOAuth,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: AUTH_SESSION_KEY })
       queryClient.invalidateQueries({ queryKey: AUTH_USER_KEY })
@@ -84,7 +84,7 @@ export const useAuth = () => {
 
   // Sign out mutation
   const { mutate: signOutMutation, isPending: isSigningOut } = useMutation({
-    mutationFn: signOut,
+    mutationFn: authService.signOut,
     onSuccess: () => {
       queryClient.setQueryData(AUTH_SESSION_KEY, null)
       queryClient.setQueryData(AUTH_USER_KEY, null)

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { searchBooks, type SearchOptions, type VolumeSearchResponse } from "../services/book-service"
+import { bookService, type SearchOptions, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseBookSearchOptions extends SearchOptions {
   readonly enabled?: boolean
@@ -27,7 +27,7 @@ export const useBookSearch = (options: UseBookSearchOptions) => {
   return useQuery<VolumeSearchResponse, Error>({
     queryKey: ["books", "search", options.query, options.field, options.maxResults, options.startIndex],
     queryFn: async () => {
-      const result = await searchBooks(options)
+      const result = await bookService.searchBooks(options)
       if (!result.ok) throw result.error
       return result.value
     },

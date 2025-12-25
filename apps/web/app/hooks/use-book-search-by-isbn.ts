@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { searchByIsbn, type VolumeSearchResponse } from "../services/book-service"
+import { bookService, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseBookSearchByIsbnOptions {
   readonly isbn: string
@@ -33,7 +33,7 @@ export const useBookSearchByIsbn = (options: UseBookSearchByIsbnOptions) => {
   return useQuery<VolumeSearchResponse, Error>({
     queryKey: ["books", "isbn", isbn, maxResults, startIndex],
     queryFn: async () => {
-      const result = await searchByIsbn(isbn, { maxResults, startIndex })
+      const result = await bookService.searchByIsbn(isbn, { maxResults, startIndex })
       if (!result.ok) throw result.error
       return result.value
     },

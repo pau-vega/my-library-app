@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { searchByAuthor, type VolumeSearchResponse } from "../services/book-service"
+import { bookService, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseBookSearchByAuthorOptions {
   readonly author: string
@@ -33,7 +33,7 @@ export const useBookSearchByAuthor = (options: UseBookSearchByAuthorOptions) => 
   return useQuery<VolumeSearchResponse, Error>({
     queryKey: ["books", "author", author, maxResults, startIndex],
     queryFn: async () => {
-      const result = await searchByAuthor(author, { maxResults, startIndex })
+      const result = await bookService.searchByAuthor(author, { maxResults, startIndex })
       if (!result.ok) throw result.error
       return result.value
     },

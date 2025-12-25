@@ -3,7 +3,7 @@ import type { Provider } from "@supabase/supabase-js"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { signInWithOAuth } from "../../services/auth-service"
+import { authService } from "../../services/auth-service"
 import { authQueryKeys } from "./auth-query-keys"
 
 interface SignInOptions {
@@ -41,7 +41,7 @@ export const useSignIn = (): UseSignInReturn => {
   const queryClient = useQueryClient()
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: signInWithOAuth,
+    mutationFn: authService.signInWithOAuth,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authQueryKeys.sessions() })
       queryClient.invalidateQueries({ queryKey: authQueryKeys.users() })

@@ -230,117 +230,122 @@ const transformOpenLibraryResponse = (response: OpenLibrarySearchResponse): Volu
 }
 
 /**
- * Searches for books using the Open Library API
+ * Book service for searching books using the Open Library API
  */
-export const searchBooks = async (options: SearchOptions): Promise<Result<VolumeSearchResponse, Error>> => {
-  try {
-    const url = buildApiUrl(options)
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "My Library App (contact: your-email@example.com)",
-      },
+export const bookService = {
+  /**
+   * Searches for books using the Open Library API
+   */
+  async searchBooks(options: SearchOptions): Promise<Result<VolumeSearchResponse, Error>> {
+    try {
+      const url = buildApiUrl(options)
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "My Library App (contact: your-email@example.com)",
+        },
+      })
+
+      if (!response.ok) {
+        return {
+          ok: false,
+          error: new Error(`API request failed with status ${response.status}: ${response.statusText}`),
+        }
+      }
+
+      const rawData = await response.json()
+
+      // Validate the Open Library response data with Zod schema
+      const parseResult = searchBookResponseSchema.safeParse(rawData)
+
+      if (!parseResult.success) {
+        return {
+          ok: false,
+          error: new Error(`Invalid API response: ${parseResult.error.message}`),
+        }
+      }
+
+      // Transform Open Library response to VolumeSearchResponse format
+      const transformedResponse = transformOpenLibraryResponse(parseResult.data)
+
+      return {
+        ok: true,
+        value: transformedResponse,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error ? error : new Error("Unknown error occurred while searching books"),
+      }
+    }
+  },
+
+  /**
+   * Searches for books by title
+   */
+  async searchByTitle(
+    title: string,
+    options?: Omit<SearchOptions, "query" | "field">,
+  ): Promise<Result<VolumeSearchResponse, Error>> {
+    return this.searchBooks({
+      query: title,
+      field: SEARCH_FIELDS.TITLE,
+      ...options,
     })
+  },
 
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(`API request failed with status ${response.status}: ${response.statusText}`),
-      }
-    }
+  /**
+   * Searches for books by author
+   */
+  async searchByAuthor(
+    author: string,
+    options?: Omit<SearchOptions, "query" | "field">,
+  ): Promise<Result<VolumeSearchResponse, Error>> {
+    return this.searchBooks({
+      query: author,
+      field: SEARCH_FIELDS.AUTHOR,
+      ...options,
+    })
+  },
 
-    const rawData = await response.json()
+  /**
+   * Searches for books by publisher
+   */
+  async searchByPublisher(
+    publisher: string,
+    options?: Omit<SearchOptions, "query" | "field">,
+  ): Promise<Result<VolumeSearchResponse, Error>> {
+    return this.searchBooks({
+      query: publisher,
+      field: SEARCH_FIELDS.PUBLISHER,
+      ...options,
+    })
+  },
 
-    // Validate the Open Library response data with Zod schema
-    const parseResult = searchBookResponseSchema.safeParse(rawData)
+  /**
+   * Searches for books by subject/category
+   */
+  async searchBySubject(
+    subject: string,
+    options?: Omit<SearchOptions, "query" | "field">,
+  ): Promise<Result<VolumeSearchResponse, Error>> {
+    return this.searchBooks({
+      query: subject,
+      field: SEARCH_FIELDS.SUBJECT,
+      ...options,
+    })
+  },
 
-    if (!parseResult.success) {
-      return {
-        ok: false,
-        error: new Error(`Invalid API response: ${parseResult.error.message}`),
-      }
-    }
-
-    // Transform Open Library response to VolumeSearchResponse format
-    const transformedResponse = transformOpenLibraryResponse(parseResult.data)
-
-    return {
-      ok: true,
-      value: transformedResponse,
-    }
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error("Unknown error occurred while searching books"),
-    }
-  }
-}
-
-/**
- * Searches for books by title
- */
-export const searchByTitle = async (
-  title: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: title,
-    field: SEARCH_FIELDS.TITLE,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by author
- */
-export const searchByAuthor = async (
-  author: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: author,
-    field: SEARCH_FIELDS.AUTHOR,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by publisher
- */
-export const searchByPublisher = async (
-  publisher: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: publisher,
-    field: SEARCH_FIELDS.PUBLISHER,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by subject/category
- */
-export const searchBySubject = async (
-  subject: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: subject,
-    field: SEARCH_FIELDS.SUBJECT,
-    ...options,
-  })
-}
-
-/**
- * Searches for books by ISBN
- */
-export const searchByIsbn = async (
-  isbn: string,
-  options?: Omit<SearchOptions, "query" | "field">,
-): Promise<Result<VolumeSearchResponse, Error>> => {
-  return searchBooks({
-    query: isbn,
-    field: SEARCH_FIELDS.ISBN,
-    ...options,
-  })
+  /**
+   * Searches for books by ISBN
+   */
+  async searchByIsbn(
+    isbn: string,
+    options?: Omit<SearchOptions, "query" | "field">,
+  ): Promise<Result<VolumeSearchResponse, Error>> {
+    return this.searchBooks({
+      query: isbn,
+      field: SEARCH_FIELDS.ISBN,
+      ...options,
+    })
+  },
 }

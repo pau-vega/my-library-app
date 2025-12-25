@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 
-import { searchByTitle, type VolumeSearchResponse } from "../services/book-service"
+import { bookService, type VolumeSearchResponse } from "../services/book-service"
 
 interface UseInfiniteBooksByTitleOptions {
   readonly title: string
@@ -46,7 +46,7 @@ export const useInfiniteBooksByTitle = (options: UseInfiniteBooksByTitleOptions)
   return useInfiniteQuery<VolumeSearchResponse, Error>({
     queryKey: ["books", "title", "infinite", title, maxResults],
     queryFn: async ({ pageParam }) => {
-      const result = await searchByTitle(title, {
+      const result = await bookService.searchByTitle(title, {
         maxResults,
         startIndex: pageParam as number,
       })

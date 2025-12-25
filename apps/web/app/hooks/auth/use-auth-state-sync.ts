@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 
-import { onAuthStateChange } from "../../services/auth-service"
+import { authService } from "../../services/auth-service"
 import { authQueryKeys } from "./auth-query-keys"
 
 /**
@@ -22,7 +22,7 @@ export const useAuthStateSync = (): void => {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((_event, session) => {
+    const unsubscribe = authService.onAuthStateChange((_event, session) => {
       // Update cache when auth state changes
       queryClient.setQueryData(authQueryKeys.session(), session)
       queryClient.setQueryData(authQueryKeys.user(), session?.user ?? null)

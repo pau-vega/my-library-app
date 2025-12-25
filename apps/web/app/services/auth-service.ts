@@ -34,143 +34,146 @@ const buildRedirectUrl = (redirectTo?: string): string => {
 }
 
 /**
- * Gets the current session from Supabase
+ * Auth service for managing authentication with Supabase
  */
-export const getSession = async (): Promise<Result<Session | null, Error>> => {
-  try {
-    const supabase = getSupabaseClient()
-    const { data, error } = await supabase.auth.getSession()
+export const authService = {
+  /**
+   * Gets the current session from Supabase
+   */
+  async getSession(): Promise<Result<Session | null, Error>> {
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase.auth.getSession()
 
-    if (error) {
+      if (error) {
+        return {
+          ok: false,
+          error: new Error(`Failed to get session: ${error.message}`),
+        }
+      }
+
+      return {
+        ok: true,
+        value: data.session,
+      }
+    } catch (error) {
       return {
         ok: false,
-        error: new Error(`Failed to get session: ${error.message}`),
+        error: error instanceof Error ? error : new Error("Unknown error occurred while getting session"),
       }
     }
+  },
 
-    return {
-      ok: true,
-      value: data.session,
-    }
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error("Unknown error occurred while getting session"),
-    }
-  }
-}
+  /**
+   * Gets the current user from Supabase
+   */
+  async getUser(): Promise<Result<User | null, Error>> {
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase.auth.getUser()
 
-/**
- * Gets the current user from Supabase
- */
-export const getUser = async (): Promise<Result<User | null, Error>> => {
-  try {
-    const supabase = getSupabaseClient()
-    const { data, error } = await supabase.auth.getUser()
+      if (error) {
+        return {
+          ok: false,
+          error: new Error(`Failed to get user: ${error.message}`),
+        }
+      }
 
-    if (error) {
+      return {
+        ok: true,
+        value: data.user,
+      }
+    } catch (error) {
       return {
         ok: false,
-        error: new Error(`Failed to get user: ${error.message}`),
+        error: error instanceof Error ? error : new Error("Unknown error occurred while getting user"),
       }
     }
+  },
 
-    return {
-      ok: true,
-      value: data.user,
-    }
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error("Unknown error occurred while getting user"),
-    }
-  }
-}
+  /**
+   * Signs in with OAuth provider
+   */
+  async signInWithOAuth(options: SignInWithOAuthOptions): Promise<Result<{ url: string } | null, Error>> {
+    try {
+      const supabase = getSupabaseClient()
+      const redirectUrl = buildRedirectUrl(options.redirectTo)
 
-/**
- * Signs in with OAuth provider
- */
-export const signInWithOAuth = async (
-  options: SignInWithOAuthOptions,
-): Promise<Result<{ url: string } | null, Error>> => {
-  try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: options.provider,
+        options: {
+          redirectTo: redirectUrl,
+        },
+      })
+
+      if (error) {
+        return {
+          ok: false,
+          error: new Error(`Failed to sign in with OAuth: ${error.message}`),
+        }
+      }
+
+      return {
+        ok: true,
+        value: data,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error ? error : new Error("Unknown error occurred while signing in with OAuth"),
+      }
+    }
+  },
+
+  /**
+   * Signs out the current user
+   */
+  async signOut(): Promise<Result<void, Error>> {
+    try {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        return {
+          ok: false,
+          error: new Error(`Failed to sign out: ${error.message}`),
+        }
+      }
+
+      return {
+        ok: true,
+        value: undefined,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error ? error : new Error("Unknown error occurred while signing out"),
+      }
+    }
+  },
+
+  /**
+   * Subscribes to auth state changes
+   * Returns a function to unsubscribe
+   */
+  onAuthStateChange(callback: AuthStateChangeCallback): () => void {
     const supabase = getSupabaseClient()
-    const redirectUrl = buildRedirectUrl(options.redirectTo)
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: options.provider,
-      options: {
-        redirectTo: redirectUrl,
-      },
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      callback(event, session)
     })
 
-    if (error) {
-      return {
-        ok: false,
-        error: new Error(`Failed to sign in with OAuth: ${error.message}`),
-      }
+    return () => {
+      subscription.unsubscribe()
     }
+  },
 
-    return {
-      ok: true,
-      value: data,
-    }
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error("Unknown error occurred while signing in with OAuth"),
-    }
-  }
-}
-
-/**
- * Signs out the current user
- */
-export const signOut = async (): Promise<Result<void, Error>> => {
-  try {
-    const supabase = getSupabaseClient()
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      return {
-        ok: false,
-        error: new Error(`Failed to sign out: ${error.message}`),
-      }
-    }
-
-    return {
-      ok: true,
-      value: undefined,
-    }
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error("Unknown error occurred while signing out"),
-    }
-  }
-}
-
-/**
- * Subscribes to auth state changes
- * Returns a function to unsubscribe
- */
-export const onAuthStateChange = (callback: AuthStateChangeCallback): (() => void) => {
-  const supabase = getSupabaseClient()
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((event, session) => {
-    callback(event, session)
-  })
-
-  return () => {
-    subscription.unsubscribe()
-  }
-}
-
-/**
- * Gets the Supabase client instance
- * Useful for direct access to Supabase features not covered by this service
- */
-export const getSupabaseClientInstance = (): SupabaseClient => {
-  return getSupabaseClient()
+  /**
+   * Gets the Supabase client instance
+   * Useful for direct access to Supabase features not covered by this service
+   */
+  getSupabaseClientInstance(): SupabaseClient {
+    return getSupabaseClient()
+  },
 }
